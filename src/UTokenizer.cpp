@@ -12,7 +12,7 @@
 #include <sstream>
 
 
-UTokenizer2::UTokenizer2(const LString& ls) {
+UTokenizer::UTokenizer(const LString& ls) {
 	str = ls;
 	count = 0;
 	tok._start = ls.start();
@@ -21,7 +21,7 @@ UTokenizer2::UTokenizer2(const LString& ls) {
 	good_chars = 0;
 }
 
-bool UTokenizer2::next() {
+bool UTokenizer::next() {
 	if (remaining <= 0)
 		return false;
 	assert(tok._start < (str._start + str.size()));
@@ -62,7 +62,7 @@ UCharTokenizer::UCharTokenizer(const LString& ls) :
 
 void UCharTokenizer::add_delimiters(const char* delimiters) {
 	LString dl(delimiters);
-	UTokenizer2 utok(dl);
+	UTokenizer utok(dl);
 	while (utok.next()) {
 		delims.push_back(utok.character);
 	}
@@ -103,7 +103,7 @@ bool UCharTokenizer::next() {
 }
 
 string to_lower(const LString& input) {
-	UTokenizer2 tok(input);
+	UTokenizer tok(input);
 	stringstream output;
 	unsigned char buf[8];
 	while (tok.next()) {
@@ -122,7 +122,7 @@ string to_lower(const LString& input) {
 }
 
 bool is_lower(const LString& input){
-	UTokenizer2 tok(input);
+	UTokenizer tok(input);
 	while (tok.next()) {
 
 		const utf8proc_property_t* prop = utf8proc_get_property(tok.character);
@@ -133,7 +133,7 @@ bool is_lower(const LString& input){
 	return true;
 }
 bool is_upper(const LString& input){
-	UTokenizer2 tok(input);
+	UTokenizer tok(input);
 	while (tok.next()) {
 		const utf8proc_property_t* prop = utf8proc_get_property(tok.character);
 		if (prop->category != UTF8PROC_CATEGORY_LU){
@@ -144,7 +144,7 @@ bool is_upper(const LString& input){
 	return true;
 }
 bool is_title(const LString& input){
-	UTokenizer2 tok(input);
+	UTokenizer tok(input);
 	int state = 0;
 	while (tok.next()) {
 		const utf8proc_property_t* prop = utf8proc_get_property(tok.character);
@@ -206,7 +206,7 @@ int char_to_ascii(int character){
 }
 
 string to_ascii(const LString& input) {
-	UTokenizer2 tok(input);
+	UTokenizer tok(input);
 	stringstream output;
 
 	unsigned char buf[9];
@@ -244,7 +244,7 @@ string to_ascii(const LString& input) {
  *           0x10FFFF, otherwise the program might crash!
  */
 string to_normalized(const LString& input) {
-	UTokenizer2 tok(input);
+	UTokenizer tok(input);
 	stringstream output;
 	int32_t res[10];
 	unsigned char buf[10];
@@ -269,8 +269,14 @@ string to_normalized(const LString& input) {
 	return output.str();
 }
 
+void char_to_stream(ostream& os, int character){
+	uint8_t buf[10];
+    size_t sz = utf8proc_encode_char(character,buf);
+    assert(sz < 10);
+    os.write((const char*)buf,sz);
+}
 bool is_alpha(const LString& input){
-	UTokenizer2 tok(input);
+	UTokenizer tok(input);
 	while (tok.next()){
 		const utf8proc_property_t* prop = utf8proc_get_property(tok.character);
 //UTF8PROC_CATEGORY_LU  1
@@ -286,7 +292,7 @@ bool is_alpha(const LString& input){
 	return true;
 }
 string to_reversed(const LString& input){
-	UTokenizer2 utok(input);
+	UTokenizer utok(input);
 	vector<LString> chars;
 	while (utok.next()){
 		chars.push_back(utok.token());

@@ -8,6 +8,7 @@
 #include "Command.h"
 #include <iostream>
 #include <sstream>
+#include <cstdlib>
 
 Arg::Arg(LCParser& lp, const char* name, argType type,
 		const char* helpstring, const char* name2) :
@@ -15,6 +16,16 @@ Arg::Arg(LCParser& lp, const char* name, argType type,
 	isValid = false;
 	isSet = false;
 	value = 0;
+    for (size_t i = 0; i < lp.args.size(); i++) {
+        if (LString(name) == lp.args[i]->name) {
+            cerr << "Argument with the same name already existing " << name << endl;
+            abort();
+        }
+        if (LString(name2) == lp.args[i]->name2) {
+            cerr << "Argument with the same name already existing " << name2 << endl;
+            abort();
+        }
+    }
 	lp.args.push_back(this);
 }
 
@@ -52,10 +63,10 @@ int LCParser::parse(int argc, char** argv) {
 void LCParser::add(char* arg) {
 	LString token(arg);
 	assert(token.size() > 0);
+    // Added item is argument to a flag
 	if (haveArg >= 0) {
 		assert(args[haveArg]->type != Arg::BOOL);
 		args[haveArg]->arg = token;
-		numSet += 1;
 		if (args[haveArg]->type == Arg::STRING) {
 			args[haveArg]->isValid = true;
 		} else if (args[haveArg]->type == Arg::INTEGER) {
@@ -67,16 +78,17 @@ void LCParser::add(char* arg) {
 			args[haveArg]->isValid = to_float(token, v);
 			args[haveArg]->value = v;
 		}
+        else{
+            cerr << "Command line parser error" << endl;
+            abort();
+        }
 		if(args[haveArg]->isValid){
 			numValid += 1;
 		}
-
 		haveArg = -1;
 	} else {
-		if (haveArg >= 0) {
-			missingarg.push_back(args[haveArg]);
-			haveArg = -1;
-		}
+        // Added item is flag
+        // Find flag in database of valid flags
 		bool f = false;
 		for (size_t i = 0; i < args.size(); i++) {
 			if (token == args[i]->name || token == args[i]->name2) {
@@ -84,14 +96,14 @@ void LCParser::add(char* arg) {
 				numSet += 1;
 				f = true;
 				haveArg = -1;
-				if (args[i]->type > Arg::BOOL) {
-					// Is not bool argument, argument required
-					haveArg = i;
-				}
-				else{
+				if (args[i]->type ==  Arg::BOOL) {
 					// Is bool argument, is OK
 					args[i]->isValid = true;
 					numValid += 1;
+				}
+				else{
+					// Is not bool argument, argument required
+					haveArg = i;
 				}
 				break;
 			}

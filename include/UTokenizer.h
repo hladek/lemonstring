@@ -15,7 +15,7 @@ static const int delimss[16] = { 0x20, 0xa0, 0x09, 0x1680, 0x180E, 0x3000, 0xFEF
 /**
  * Tokenizer for splitting utf-8 string to characters
  */
-class UTokenizer2 {
+class UTokenizer {
 /**
  * Processed utf-8 string
  */
@@ -44,9 +44,9 @@ public:
 	/**
 	 * New unicode tokenizer
 	 */
-	UTokenizer2(const LString& ls);
+	UTokenizer(const LString& ls);
 
-	virtual ~UTokenizer2(){};
+	virtual ~UTokenizer(){};
 	/**
 	 * Finds next valid character.
 	 * @return false if no new valid character can be found
@@ -64,7 +64,7 @@ public:
  */
 class UCharTokenizer  {
 	LString outtok;
-	UTokenizer2 tok;
+	UTokenizer tok;
 	bool is_delimiter(int chara);
 public:
 	/**
@@ -117,6 +117,8 @@ public:
 
 
 int char_to_ascii(int character);
+
+void char_to_stream(ostream& os, int character);
 /**
  * @return lowercse string
  */

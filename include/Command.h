@@ -91,7 +91,7 @@ public:
 class LCParser {
 	friend class Arg;
 	/**
-	 * Flag if n ext added value should be argument for previous argument
+	 * Flag if next added value should be argument for previous argument
 	 */
 	int haveArg;
 public:
