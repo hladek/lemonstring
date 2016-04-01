@@ -221,6 +221,9 @@ public:
 };
 
 
+/**
+ * Tokenizer Interface
+ */
 class TokenizerI{
 public:
 	virtual bool next() = 0;
@@ -229,6 +232,13 @@ public:
 
 };
 
+
+/**
+ * Tokenizes a string according to a given character
+ *
+ * Empty tokens are skipped
+ *
+ */
 class Tokenizer : public TokenizerI {
 	/**
 	 * Processed string pointer
