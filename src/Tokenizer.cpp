@@ -146,7 +146,7 @@ bool Tokenizer::next(){
 	//assert(tok.start >= str && tok.start <= end);
 	//assert(tok.start <= endToken);
 	tok._start = tok._start + tok._size;
-	while ((*tok._start == delimiter) && tok._start < end ){
+	while (tok._start < end && (*tok._start == delimiter)  ){
 		assert(*tok._start != 0);
 		tok._start++;
 	}
